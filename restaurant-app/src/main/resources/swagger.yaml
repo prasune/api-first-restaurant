@@ -1,0 +1,321 @@
+openapi: 3.0.1
+info:
+  title: Restaurant Service APIs
+  description: APIs to register and manage restaurants
+  contact:
+    name: Prasune John
+    url: https://prasunejohn.blogspot.com
+    email: test@email.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  version: "1.0"
+servers:
+  - url: /api/v3
+tags:
+  - name: restaurant
+    description: Restaurants available for delivery
+    externalDocs:
+      description: public doc urls if any
+      url: http://<publicDocUrlIfAny>
+paths:
+  /restaurants:
+    get:
+      tags:
+        - restaurant
+      summary: searches restaurant
+      description: Returns all restaurants from the system based on the filter criteria
+      operationId: listRestaurants
+      parameters:
+        - $ref: '#/components/parameters/restaurantNameParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        200:
+          description: Restaurant response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestaurantSummary'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - restaurant
+      summary: creates restaurant
+      description: Creates a new restaurant entry in the system
+      operationId: createRestaurant
+      x-codegen-request-body-name: CreateRestaurantDetails
+      requestBody:
+        description: Restaurant to add to the system
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRestaurantDetails'
+        required: true
+      responses:
+        200:
+          description: Details of the Restaurant entry that got created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        412:
+          $ref: '#/components/responses/PreConditionFailed'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /restaurants/{restaurantId}:
+    get:
+      tags:
+        - restaurant
+      summary: get restaurant by id
+      description: Returns details of the Restaurant
+      operationId: GetRestaurant
+      parameters:
+        - $ref: '#/components/parameters/restaurantIdPathParam'
+      responses:
+        200:
+          description: Restaurant Details response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - restaurant
+      summary: updates restaurant by id
+      description: Updates details of the Restaurant
+      operationId: UpdateRestaurant
+      parameters:
+        - $ref: '#/components/parameters/restaurantIdPathParam'
+      x-codegen-request-body-name: UpdateRestaurantDetails
+      requestBody:
+        description: Details of the restaurant to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRestaurantDetails'
+        required: true
+      responses:
+        200:
+          description: Updated Restaurant Details response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - restaurant
+      summary: deletes restaurant by id
+      description: Delete restaurant entry from the system
+      operationId: DeleteRestaurant
+      parameters:
+        - $ref: '#/components/parameters/restaurantIdPathParam'
+      responses:
+        204:
+          description: Restaurant entry was deleted from the system
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Error:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    CreateRestaurantDetails:
+      required:
+        - cuisine
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+        cuisine:
+          type: string
+    Restaurant:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        cuisine:
+          type: string
+        timeRegistered:
+          type: string
+          format: date-time
+        timeUpdated:
+          type: string
+          format: date-time
+    RestaurantSummary:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        cuisine:
+          type: string
+    UpdateRestaurantDetails:
+      required:
+        - cuisine
+      type: object
+      properties:
+        cuisine:
+          type: string
+  responses:
+    BadRequest:
+      description: The server could not understand the request due to invalid syntax
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: The requested resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Method not allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Server enountered internal error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found or not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    PreConditionFailed:
+      description: Precondition like e-tag matching failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TooManyRequests:
+      description: The user has sent too many requests in a given amount of time than
+        allowed limit
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      description: page parameter to determine the set of paginated data o return.
+      schema:
+        minimum: 0
+        type: integer
+    limitParam:
+      name: limit
+      in: query
+      description: The numbers of items to return.
+      schema:
+        maximum: 50
+        minimum: 1
+        type: integer
+        default: 20
+    restaurantIdPathParam:
+      name: restaurantId
+      in: path
+      description: ID of Restaurant to fetch
+      required: true
+      schema:
+        type: integer
+        format: int64
+    restaurantNameParam:
+      name: name
+      in: query
+      description: for filtering the restaurant based on name
+      schema:
+        type: string
