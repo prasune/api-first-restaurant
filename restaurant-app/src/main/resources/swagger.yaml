@@ -27,9 +27,9 @@ paths:
       description: Returns all restaurants from the system based on the filter criteria
       operationId: listRestaurants
       parameters:
-        - $ref: '#/components/parameters/restaurantNameParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/restaurantNameQueryParam'
+        - $ref: '#/components/parameters/pageQueryParam'
+        - $ref: '#/components/parameters/limitQueryParam'
       responses:
         200:
           description: Restaurant response
@@ -289,14 +289,29 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
   parameters:
-    pageParam:
+    sortOrderQueryParam:
+      name: sortOrder
+      in: query
+      description: order in which queried data needs to be sorted.
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+    sortByQueryParam:
+      name: sortBy
+      in: query
+      description: column based on which queried data needs to sorted.
+      schema:
+        type: string
+    pageQueryParam:
       name: page
       in: query
-      description: page parameter to determine the set of paginated data o return.
+      description: page parameter to determine the set of paginated data to return.
       schema:
         minimum: 0
         type: integer
-    limitParam:
+    limitQueryParam:
       name: limit
       in: query
       description: The numbers of items to return.
@@ -313,7 +328,7 @@ components:
       schema:
         type: integer
         format: int64
-    restaurantNameParam:
+    restaurantNameQueryParam:
       name: name
       in: query
       description: for filtering the restaurant based on name
